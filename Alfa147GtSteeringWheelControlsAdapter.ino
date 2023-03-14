@@ -29,7 +29,8 @@
 
 void setup() {
   #ifdef __debug__
-    Serial.begin(38400);
+    Serial.begin(9600);
+    Serial.println("Start Debugging");
   #endif
 }
 
@@ -52,5 +53,5 @@ void loop() {
     Serial.println(out);
   #endif
   
-  delay(50);
+  delay(250);
 }
