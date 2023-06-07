@@ -21,18 +21,30 @@
   Button 8  ???
 */
 
-#define PINL A1
+#include <Adafruit_MCP4725.h> // MCP4725 library from adafruit
+
+#define PINL A3
 #define PINR A2
-#define OUTPUT A3
-#define STEPS 1023
+#define OUTPUT 10
+#define STEPS 512
 #define __debug__
 
+Adafruit_MCP4725 MCP4725;
+
 void setup() {
-  #ifdef __debug__
-    Serial.begin(9600);
-    Serial.println("Start Debugging");
-  #endif
+ // MCP4725.begin(0x62);
+//we use hardware pulldowns
+#ifdef __debug__
+  Serial.begin(9600);
+  Serial.println("Start Debugging");
+  Serial.println("Init MCP4725");
+  
+   Serial.println("Started MCP4725");
+#endif
+  MCP4725.begin(0x60);
+  MCP4725.setVoltage(0, true);
 }
+
 
 int out;
 int readL;
@@ -41,17 +53,22 @@ int readR;
 void loop() {
   readL = analogRead(PINL);
   readR = analogRead(PINR);
-  if(readL){
-    out = readL/3;
-  } else{
-    out = readR/3 + STEPS/2;
+#ifdef __debug__
+  Serial.print("OutputL: ");
+  Serial.println(readL);
+  Serial.print("OutputR: ");
+  Serial.println(readR);
+#endif
+  if (readL) {
+    out = readL / 2;
+  } else if (readR) {
+    out = readR / 2 + STEPS;
+  } else {
+    out = 0;
   }
-  analogWrite(OUTPUT, out);
   
-  #ifdef __debug__
-    Serial.print("Output: ");
-    Serial.println(out);
-  #endif
-  
+  MCP4725.setVoltage(out*4, false);
+
+
   delay(250);
 }
